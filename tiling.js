@@ -1034,7 +1034,8 @@ export class Space extends Array {
     }
 
     addFloating(metaWindow) {
-        if (this._floating.indexOf(metaWindow) !== -1 ||
+        if (!metaWindow.clone ||
+            this._floating.indexOf(metaWindow) !== -1 ||
             metaWindow.is_on_all_workspaces())
             return false;
         this._floating.push(metaWindow);
@@ -4116,6 +4117,9 @@ export function add_handler(_ws, metaWindow) {
    created to ensure that the WindowActor exists.
 */
 export function insertWindow(metaWindow, options = {}) {
+    if (!metaWindow.clone)
+        return;
+
     const existing = options?.existing ?? false;
     const dropping = options?.dropping ?? false;
     const dropCallback = options?.dropCallback ?? function() {};
