@@ -636,7 +636,18 @@ export class Space extends Array {
                     Easer.addEase(c, {
                         x, y,
                         time,
-                        onComplete: this.moveDone.bind(this),
+                        onComplete: () => {
+                            // x can finish while y still blocks native window restoration.
+                            const t = c.get_transition('y');
+                            if (t) {
+                                t.connect('stopped', (_timeline, finished) => {
+                                    if (finished)
+                                        this.moveDone();
+                                });
+                            } else {
+                                this.moveDone();
+                            }
+                        },
                     });
                 }
             }
